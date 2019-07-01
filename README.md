@@ -13,9 +13,9 @@ import SwiftUI
 import WebView
 
 struct ContentView: View {
-  @EnvironmentObject public var webViewStore: WebViewStore
+  @EnvironmentObject var webViewStore: WebViewStore
   
-  public var body: some View {
+  var body: some View {
     NavigationView {
       WebView(webView: webViewStore.webView)
         .navigationBarTitle(Text(verbatim: webViewStore.webView.title ?? ""))
