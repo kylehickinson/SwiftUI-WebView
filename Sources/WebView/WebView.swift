@@ -2,15 +2,25 @@ import SwiftUI
 import Combine
 import WebKit
 
-public class WebViewStore: BindableObject {
-  public let webView: WKWebView
-  public let didChange = PassthroughSubject<Void, Never>()
+public class WebViewStore: ObservableObject {
+  @Published public var webView: WKWebView {
+    didSet {
+      setupObservers()
+    }
+  }
   
   public init(webView: WKWebView = WKWebView()) {
     self.webView = webView
-    
-    func subscriber<Value>(for keyPath: KeyPath<WKWebView, Value>) -> AnyCancellable {
-      return AnyCancellable(webView.publisher(for: keyPath).sink { _ in self.didChange.send() })
+    setupObservers()
+  }
+  
+  private func setupObservers() {
+    func subscriber<Value>(for keyPath: KeyPath<WKWebView, Value>) -> NSKeyValueObservation {
+      return webView.observe(keyPath, options: [.prior]) { _, change in
+        if change.isPrior {
+          self.objectWillChange.send()
+        }
+      }
     }
     // Setup observers for all KVO compliant properties
     observers = [
@@ -25,13 +35,13 @@ public class WebViewStore: BindableObject {
     ]
   }
   
-  private var observers: [AnyCancellable] = []
+  private var observers: [NSKeyValueObservation] = []
   
   deinit {
     observers.forEach {
       // Not even sure if this is required?
       // Probably wont be needed in future betas?
-      $0.cancel()
+      $0.invalidate()
     }
   }
 }
