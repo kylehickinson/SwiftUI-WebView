@@ -2,6 +2,7 @@ import SwiftUI
 import Combine
 import WebKit
 
+@dynamicMemberLookup
 public class WebViewStore: ObservableObject {
   @Published public var webView: WKWebView {
     didSet {
@@ -36,6 +37,10 @@ public class WebViewStore: ObservableObject {
   }
   
   private var observers: [NSKeyValueObservation] = []
+  
+  public subscript<T>(dynamicMember keyPath: KeyPath<WKWebView, T>) -> T {
+    webView[keyPath: keyPath]
+  }
 }
 
 #if os(iOS)
