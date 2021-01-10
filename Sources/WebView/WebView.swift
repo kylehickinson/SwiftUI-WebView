@@ -36,56 +36,42 @@ public class WebViewStore: ObservableObject {
   }
   
   private var observers: [NSKeyValueObservation] = []
-  
-  deinit {
-    observers.forEach {
-      // Not even sure if this is required?
-      // Probably wont be needed in future betas?
-      $0.invalidate()
-    }
-  }
 }
 
+#if os(iOS)
 /// A container for using a WKWebView in SwiftUI
 public struct WebView: View, UIViewRepresentable {
   /// The WKWebView to display
   public let webView: WKWebView
   
-  public typealias UIViewType = UIViewContainerView<WKWebView>
+  public init(webView: WKWebView) {
+    self.webView = webView
+  }
+  
+  public func makeUIView(context: UIViewRepresentableContext<WebView>) -> WKWebView {
+    webView
+  }
+  
+  public func updateUIView(_ uiView: WKWebView, context: UIViewRepresentableContext<WebView>) {
+  }
+}
+#endif
+
+#if os(macOS)
+/// A container for using a WKWebView in SwiftUI
+public struct WebView: View, NSViewRepresentable {
+  /// The WKWebView to display
+  public let webView: WKWebView
   
   public init(webView: WKWebView) {
     self.webView = webView
   }
   
-  public func makeUIView(context: UIViewRepresentableContext<WebView>) -> WebView.UIViewType {
-    return UIViewContainerView()
+  public func makeNSView(context: NSViewRepresentableContext<WebView>) -> WKWebView {
+    webView
   }
   
-  public func updateUIView(_ uiView: WebView.UIViewType, context: UIViewRepresentableContext<WebView>) {
-    // If its the same content view we don't need to update.
-    if uiView.contentView !== webView {
-      uiView.contentView = webView
-    }
+  public func updateNSView(_ uiView: WKWebView, context: NSViewRepresentableContext<WebView>) {
   }
 }
-
-/// A UIView which simply adds some view to its view hierarchy
-public class UIViewContainerView<ContentView: UIView>: UIView {
-  var contentView: ContentView? {
-    willSet {
-      contentView?.removeFromSuperview()
-    }
-    didSet {
-      if let contentView = contentView {
-        addSubview(contentView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-          contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
-          contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
-          contentView.topAnchor.constraint(equalTo: topAnchor),
-          contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
-      }
-    }
-  }
-}
+#endif
