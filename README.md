@@ -13,25 +13,25 @@ import SwiftUI
 import WebView
 
 struct ContentView: View {
-  @ObservedObject var webViewStore = WebViewStore()
+  @StateObject var webViewStore = WebViewStore()
   
   var body: some View {
     NavigationView {
       WebView(webView: webViewStore.webView)
-        .navigationBarTitle(Text(verbatim: webViewStore.webView.title ?? ""), displayMode: .inline)
+        .navigationBarTitle(Text(verbatim: webViewStore.title ?? ""), displayMode: .inline)
         .navigationBarItems(trailing: HStack {
           Button(action: goBack) {
             Image(systemName: "chevron.left")
               .imageScale(.large)
               .aspectRatio(contentMode: .fit)
               .frame(width: 32, height: 32)
-          }.disabled(!webViewStore.webView.canGoBack)
+          }.disabled(!webViewStore.canGoBack)
           Button(action: goForward) {
             Image(systemName: "chevron.right")
               .imageScale(.large)
               .aspectRatio(contentMode: .fit)
               .frame(width: 32, height: 32)
-          }.disabled(!webViewStore.webView.canGoForward)
+          }.disabled(!webViewStore.canGoForward)
         })
     }.onAppear {
       self.webViewStore.webView.load(URLRequest(url: URL(string: "https://apple.com")!))
