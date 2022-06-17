@@ -34,6 +34,15 @@ public class WebViewStore: ObservableObject {
       subscriber(for: \.canGoBack),
       subscriber(for: \.canGoForward)
     ]
+    if #available(iOS 15.0, *) {
+      observers += [
+        subscriber(for: \.themeColor),
+        subscriber(for: \.underPageBackgroundColor),
+        subscriber(for: \.fullscreenState),
+        subscriber(for: \.microphoneCaptureState),
+        subscriber(for: \.cameraCaptureState)
+      ]
+    }
   }
   
   private var observers: [NSKeyValueObservation] = []
