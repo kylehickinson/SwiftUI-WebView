@@ -3,15 +3,18 @@ import Combine
 import WebKit
 
 @dynamicMemberLookup
-public class WebViewStore: ObservableObject {
+public class WebViewStore: NSObject, ObservableObject, WKNavigationDelegate {
   @Published public var webView: WKWebView {
     didSet {
-      setupObservers()
+        setupNavigationDelegate()
+        setupObservers()
     }
   }
   
   public init(webView: WKWebView = WKWebView()) {
     self.webView = webView
+    super.init()
+    setupNavigationDelegate()
     setupObservers()
   }
   
@@ -53,11 +56,14 @@ public class WebViewStore: ObservableObject {
 #endif
   }
   
-  private var observers: [NSKeyValueObservation] = []
-  
-  public subscript<T>(dynamicMember keyPath: KeyPath<WKWebView, T>) -> T {
-    webView[keyPath: keyPath]
-  }
+    private var observers: [NSKeyValueObservation] = []
+
+    public subscript<T>(dynamicMember keyPath: KeyPath<WKWebView, T>) -> T {
+        webView[keyPath: keyPath]
+    }
+    private func setupNavigationDelegate() {
+        webView.navigationDelegate = self
+    }
 }
 
 #if os(iOS)
