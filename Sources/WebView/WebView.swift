@@ -56,14 +56,14 @@ public class WebViewStore: NSObject, ObservableObject, WKNavigationDelegate {
 #endif
   }
   
-    private var observers: [NSKeyValueObservation] = []
+  private var observers: [NSKeyValueObservation] = []
 
-    public subscript<T>(dynamicMember keyPath: KeyPath<WKWebView, T>) -> T {
-        webView[keyPath: keyPath]
-    }
-    private func setupNavigationDelegate() {
-        webView.navigationDelegate = self
-    }
+  public subscript<T>(dynamicMember keyPath: KeyPath<WKWebView, T>) -> T {
+    webView[keyPath: keyPath]
+  }
+  private func setupNavigationDelegate() {
+    webView.navigationDelegate = self
+  }
 }
 
 #if os(iOS)
