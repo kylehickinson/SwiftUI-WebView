@@ -17,9 +17,11 @@ public class WebViewStore: ObservableObject {
   
   private func setupObservers() {
     func subscriber<Value>(for keyPath: KeyPath<WKWebView, Value>) -> NSKeyValueObservation {
-      return webView.observe(keyPath, options: [.prior]) { _, change in
+      return webView.observe(keyPath, options: [.prior]) { [weak self] _, change in
+        guard let self else { return }
+          
         if change.isPrior {
-          self.objectWillChange.send()
+          objectWillChange.send()
         }
       }
     }
